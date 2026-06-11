@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:princess_app/core/constants/app_colors.dart';
-import 'package:princess_app/core/constants/app_spacing.dart';
 import 'package:princess_app/core/widgets/app_button.dart';
 import 'package:princess_app/core/widgets/auth_scaffold.dart';
 
@@ -23,30 +22,25 @@ class SuccessScreen extends StatefulWidget {
 
 class _SuccessScreenState extends State<SuccessScreen>
     with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _scaleAnimation;
-  late Animation<double> _opacityAnimation;
+  late final AnimationController _animationController;
+  late final Animation<double> _scaleAnimation;
+  late final Animation<double> _opacityAnimation;
 
   @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 700),
     );
-
     _scaleAnimation = CurvedAnimation(
       parent: _animationController,
-      curve: Curves.elasticOut,
+      curve: Curves.easeOutBack,
     );
-
-    _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: const Interval(0.0, 0.5, curve: Curves.easeIn),
-      ),
+    _opacityAnimation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeOut,
     );
-
     _animationController.forward();
   }
 
@@ -58,17 +52,14 @@ class _SuccessScreenState extends State<SuccessScreen>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return AuthScaffold(
       showBackButton: false,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Spacer(),
-
-            // Animated Glowing Checkmark
+            const Spacer(flex: 3),
             AnimatedBuilder(
               animation: _animationController,
               builder: (context, child) {
@@ -80,61 +71,114 @@ class _SuccessScreenState extends State<SuccessScreen>
                   ),
                 );
               },
-              child: Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: AppColors.primaryGradient,
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.4),
-                      blurRadius: 30,
-                      spreadRadius: 2,
-                    ),
-                  ],
-                ),
-                child: const Center(
-                  child: Icon(
-                    Icons.check_rounded,
-                    color: Colors.white,
-                    size: 64,
-                  ),
-                ),
-              ),
+              child: const _SuccessMark(),
             ),
             const SizedBox(height: 48),
-
-            // Title
             Text(
               widget.title,
               textAlign: TextAlign.center,
-              style: theme.textTheme.displayMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+              style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                color: AppColors.textPrimary,
+                fontSize: 22,
+                height: 1.25,
+                fontWeight: FontWeight.w300,
+                letterSpacing: 0,
               ),
             ),
-            AppSpacing.hM,
-
-            // Subtitle
-            Text(
-              widget.subtitle,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: AppColors.textSecondary,
-                height: 1.4,
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Text(
+                widget.subtitle,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                  fontSize: 10,
+                  height: 1.35,
+                  fontWeight: FontWeight.w300,
+                ),
               ),
             ),
-
-            const Spacer(),
-
-            // Action Button
+            const Spacer(flex: 4),
             AppButton(
               text: 'Continue',
               onPressed: () => context.go(widget.nextRoute),
             ),
-            const SizedBox(height: 48),
+            const SizedBox(height: 38),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _SuccessMark extends StatelessWidget {
+  const _SuccessMark();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 150,
+      height: 150,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          const Positioned(top: 12, left: 28, child: _Dot(size: 13)),
+          const Positioned(top: 5, right: 55, child: _Dot(size: 4)),
+          const Positioned(top: 19, right: 21, child: _Dot(size: 10)),
+          const Positioned(left: 21, bottom: 48, child: _Dot(size: 7)),
+          const Positioned(right: 20, bottom: 65, child: _Dot(size: 3)),
+          const Positioned(right: 28, bottom: 34, child: _Dot(size: 4)),
+          const Positioned(bottom: 24, left: 62, child: _Dot(size: 5)),
+          Container(
+            width: 94,
+            height: 94,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: const Color(0xFFC86F8F).withValues(alpha: 0.76),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFC86F8F).withValues(alpha: 0.18),
+                  blurRadius: 28,
+                  spreadRadius: 6,
+                ),
+              ],
+            ),
+            child: Center(
+              child: Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(9),
+                  border: Border.all(color: Colors.white, width: 2.2),
+                ),
+                child: const Icon(
+                  Icons.check_rounded,
+                  color: Colors.white,
+                  size: 23,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Dot extends StatelessWidget {
+  final double size;
+
+  const _Dot({required this.size});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        color: Color(0xFFD9789A),
       ),
     );
   }

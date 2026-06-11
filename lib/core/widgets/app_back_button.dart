@@ -25,13 +25,16 @@ class AppBackButton extends StatelessWidget {
           height: 44,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: AppColors.cardBg.withValues(alpha: 0.5),
-            border: Border.all(color: AppColors.cardBorder, width: 1),
+            color: Colors.white.withValues(alpha: 0.02),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.08),
+              width: 1,
+            ),
           ),
           child: const Icon(
-            Icons.chevron_left_rounded,
+            Icons.arrow_back_rounded,
             color: AppColors.textPrimary,
-            size: 24,
+            size: 20,
           ),
         ),
       ),

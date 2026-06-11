@@ -1,15 +1,14 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:princess_app/core/constants/app_colors.dart';
 import 'package:princess_app/core/constants/app_routes.dart';
-import 'package:princess_app/core/constants/app_spacing.dart';
 import 'package:princess_app/core/widgets/app_button.dart';
 import 'package:princess_app/core/widgets/app_text_field.dart';
 import 'package:princess_app/core/widgets/auth_scaffold.dart';
 import 'package:princess_app/core/widgets/loading_overlay.dart';
 import 'package:princess_app/features/auth/presentation/controllers/auth_controller.dart';
-import 'package:princess_app/features/auth/presentation/widgets/auth_header.dart';
 import 'package:princess_app/features/auth/presentation/widgets/profile_avatar.dart';
 
 class FillProfileScreen extends ConsumerStatefulWidget {
@@ -41,7 +40,9 @@ class _FillProfileScreenState extends ConsumerState<FillProfileScreen> {
 
   void _handleCompleteProfile() async {
     if (_formKey.currentState?.validate() ?? false) {
-      final success = await ref.read(authControllerProvider.notifier).completeProfile(
+      final success = await ref
+          .read(authControllerProvider.notifier)
+          .completeProfile(
             fullName: _fullNameController.text.trim(),
             phoneNumber: _phoneController.text.trim(),
             birthDate: _birthDateController.text.trim(),
@@ -59,7 +60,7 @@ class _FillProfileScreenState extends ConsumerState<FillProfileScreen> {
   }
 
   Future<void> _selectBirthDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    final picked = await showDatePicker(
       context: context,
       initialDate: DateTime(2000),
       firstDate: DateTime(1900),
@@ -76,9 +77,11 @@ class _FillProfileScreenState extends ConsumerState<FillProfileScreen> {
         );
       },
     );
+
     if (picked != null && mounted) {
       setState(() {
-        _birthDateController.text = "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
+        _birthDateController.text =
+            '${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}';
       });
     }
   }
@@ -86,10 +89,13 @@ class _FillProfileScreenState extends ConsumerState<FillProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
+    if (_emailController.text.isEmpty && authState.user?.email != null) {
+      _emailController.text = authState.user!.email;
+    }
 
-    // Show error banner if present
     ref.listen<AuthFormState>(authControllerProvider, (previous, next) {
-      if (next.errorMessage != null && next.errorMessage != previous?.errorMessage) {
+      if (next.errorMessage != null &&
+          next.errorMessage != previous?.errorMessage) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(next.errorMessage!),
@@ -105,33 +111,31 @@ class _FillProfileScreenState extends ConsumerState<FillProfileScreen> {
       isLoading: authState.isLoading,
       child: AuthScaffold(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 16),
-                const AuthHeader(
-                  title: "Fill Your Profile",
-                  subtitle: "Enter details to build a personalized experience.",
+                const SizedBox(height: 18),
+                Text(
+                  'Fill Your Profile',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w300,
+                  ),
                 ),
-                const SizedBox(height: 28),
-                
-                // Avatar Picker
+                const SizedBox(height: 18),
                 ProfileAvatar(
                   onAvatarChanged: (url) {
                     _avatarUrl = url;
                   },
                 ),
-                const SizedBox(height: 28),
-                
-                // Full Name
+                const SizedBox(height: 16),
                 AppTextField(
                   controller: _fullNameController,
-                  labelText: 'Full Name',
                   hintText: 'Full Name',
-                  prefixIcon: const Icon(Icons.person_outline_rounded),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'Full name is required';
@@ -139,14 +143,10 @@ class _FillProfileScreenState extends ConsumerState<FillProfileScreen> {
                     return null;
                   },
                 ),
-                AppSpacing.hM,
-
-                // Nickname
+                const SizedBox(height: 10),
                 AppTextField(
                   controller: _nicknameController,
-                  labelText: 'Nickname',
                   hintText: 'Nickname',
-                  prefixIcon: const Icon(Icons.face_outlined),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'Nickname is required';
@@ -154,14 +154,10 @@ class _FillProfileScreenState extends ConsumerState<FillProfileScreen> {
                     return null;
                   },
                 ),
-                AppSpacing.hM,
-                
-                // Birth Date (Interactive DatePicker trigger)
+                const SizedBox(height: 10),
                 AppTextField(
                   controller: _birthDateController,
-                  labelText: 'Birth Date',
-                  hintText: 'YYYY-MM-DD',
-                  prefixIcon: const Icon(Icons.calendar_today_outlined),
+                  hintText: 'Date of Birth',
                   readOnly: true,
                   onTap: () => _selectBirthDate(context),
                   validator: (value) {
@@ -171,14 +167,10 @@ class _FillProfileScreenState extends ConsumerState<FillProfileScreen> {
                     return null;
                   },
                 ),
-                AppSpacing.hM,
-
-                // Email
+                const SizedBox(height: 10),
                 AppTextField(
                   controller: _emailController,
-                  labelText: 'Email Address',
-                  hintText: 'hello@example.com',
-                  prefixIcon: const Icon(Icons.email_outlined),
+                  hintText: 'Email',
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
@@ -190,14 +182,11 @@ class _FillProfileScreenState extends ConsumerState<FillProfileScreen> {
                     return null;
                   },
                 ),
-                AppSpacing.hM,
-                
-                // Phone Number
+                const SizedBox(height: 10),
                 AppTextField(
                   controller: _phoneController,
-                  labelText: 'Phone Number',
-                  hintText: '+1 123 456 7890',
-                  prefixIcon: const Icon(Icons.phone_outlined),
+                  hintText: 'Phone Number',
+                  prefixIcon: const Icon(Icons.flag_rounded),
                   keyboardType: TextInputType.phone,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
@@ -206,57 +195,97 @@ class _FillProfileScreenState extends ConsumerState<FillProfileScreen> {
                     return null;
                   },
                 ),
-                AppSpacing.hM,
-
-                // Gender Selection
-                Text(
-                  'Gender',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: AppColors.textPrimary,
-                        fontWeight: FontWeight.w500,
-                      ),
-                ),
-                AppSpacing.hS,
-                DropdownButtonFormField<String>(
+                const SizedBox(height: 10),
+                _GlassDropdown(
                   value: _selectedGender,
-                  decoration: const InputDecoration(
-                    hintText: 'Select Gender',
-                    prefixIcon: Icon(Icons.wc_outlined, color: AppColors.textSecondary),
-                  ),
-                  dropdownColor: AppColors.cardBg,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: AppColors.textPrimary),
-                  items: const ['Female', 'Male', 'Other']
-                      .map((gender) => DropdownMenuItem(
-                            value: gender,
-                            child: Text(gender),
-                          ))
-                      .toList(),
+                  hint: 'Gender',
+                  items: const ['Female', 'Male', 'Other'],
                   onChanged: (value) {
-                    setState(() {
-                      _selectedGender = value;
-                    });
-                  },
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Gender is required';
-                    }
-                    return null;
+                    setState(() => _selectedGender = value);
                   },
                 ),
-                
-                const SizedBox(height: 40),
-                
-                // Continue Button
-                AppButton(
-                  text: 'Save & Continue',
-                  onPressed: _handleCompleteProfile,
-                ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 26),
+                AppButton(text: 'Continue', onPressed: _handleCompleteProfile),
+                const SizedBox(height: 24),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class _GlassDropdown extends StatelessWidget {
+  final String? value;
+  final String hint;
+  final List<String> items;
+  final ValueChanged<String?> onChanged;
+
+  const _GlassDropdown({
+    required this.value,
+    required this.hint,
+    required this.items,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(11),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+        child: DropdownButtonFormField<String>(
+          initialValue: value,
+          dropdownColor: const Color(0xFF6D3E38),
+          iconEnabledColor: AppColors.textSecondary,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: AppColors.textPrimary,
+            fontSize: 11,
+            fontWeight: FontWeight.w300,
+          ),
+          decoration: InputDecoration(
+            hintText: hint,
+            isDense: true,
+            filled: true,
+            fillColor: Colors.white.withValues(alpha: 0.09),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 17,
+              vertical: 14,
+            ),
+            border: _border(Colors.white.withValues(alpha: 0.13)),
+            enabledBorder: _border(Colors.white.withValues(alpha: 0.13)),
+            focusedBorder: _border(Colors.white.withValues(alpha: 0.27)),
+            errorBorder: _border(AppColors.error.withValues(alpha: 0.75)),
+            focusedErrorBorder: _border(AppColors.error),
+            hintStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppColors.textSecondary.withValues(alpha: 0.72),
+              fontSize: 11,
+              fontWeight: FontWeight.w300,
+            ),
+          ),
+          items: items
+              .map(
+                (item) =>
+                    DropdownMenuItem<String>(value: item, child: Text(item)),
+              )
+              .toList(),
+          onChanged: onChanged,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Gender is required';
+            }
+            return null;
+          },
+        ),
+      ),
+    );
+  }
+
+  OutlineInputBorder _border(Color color) {
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(11),
+      borderSide: BorderSide(color: color, width: 1),
     );
   }
 }

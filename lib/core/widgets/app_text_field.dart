@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_spacing.dart';
@@ -51,34 +52,82 @@ class AppTextField extends StatelessWidget {
           ),
           AppSpacing.hS,
         ],
-        TextFormField(
-          controller: controller,
-          validator: validator,
-          keyboardType: keyboardType,
-          autofocus: autofocus,
-          textInputAction: textInputAction,
-          onFieldSubmitted: onFieldSubmitted,
-          readOnly: readOnly,
-          onTap: onTap,
-          obscureText: obscureText,
-          style: theme.textTheme.bodyLarge?.copyWith(color: AppColors.textPrimary),
-          decoration: InputDecoration(
-            hintText: hintText,
-            prefixIcon: prefixIcon != null
-                ? IconTheme(
-                    data: const IconThemeData(color: AppColors.textSecondary),
-                    child: prefixIcon!,
-                  )
-                : null,
-            suffixIcon: suffixIcon != null
-                ? IconTheme(
-                    data: const IconThemeData(color: AppColors.textSecondary),
-                    child: suffixIcon!,
-                  )
-                : null,
+        ClipRRect(
+          borderRadius: BorderRadius.circular(11),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+            child: TextFormField(
+              controller: controller,
+              validator: validator,
+              keyboardType: keyboardType,
+              autofocus: autofocus,
+              textInputAction: textInputAction,
+              onFieldSubmitted: onFieldSubmitted,
+              readOnly: readOnly,
+              onTap: onTap,
+              obscureText: obscureText,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: AppColors.textPrimary,
+                fontSize: 12,
+                fontWeight: FontWeight.w300,
+              ),
+              decoration: InputDecoration(
+                hintText: hintText,
+                isDense: true,
+                filled: true,
+                fillColor: Colors.white.withValues(alpha: 0.09),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 17,
+                  vertical: 14,
+                ),
+                border: _border(Colors.white.withValues(alpha: 0.13)),
+                enabledBorder: _border(Colors.white.withValues(alpha: 0.13)),
+                focusedBorder: _border(Colors.white.withValues(alpha: 0.27)),
+                errorBorder: _border(AppColors.error.withValues(alpha: 0.75)),
+                focusedErrorBorder: _border(AppColors.error),
+                hintStyle: theme.textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary.withValues(alpha: 0.72),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w300,
+                ),
+                prefixIcon: prefixIcon != null
+                    ? IconTheme(
+                        data: IconThemeData(
+                          color: AppColors.textPrimary.withValues(alpha: 0.82),
+                          size: 16,
+                        ),
+                        child: prefixIcon!,
+                      )
+                    : null,
+                prefixIconConstraints: const BoxConstraints(
+                  minWidth: 42,
+                  minHeight: 40,
+                ),
+                suffixIcon: suffixIcon != null
+                    ? IconTheme(
+                        data: IconThemeData(
+                          color: AppColors.textPrimary.withValues(alpha: 0.82),
+                          size: 16,
+                        ),
+                        child: suffixIcon!,
+                      )
+                    : null,
+                suffixIconConstraints: const BoxConstraints(
+                  minWidth: 42,
+                  minHeight: 40,
+                ),
+              ),
+            ),
           ),
         ),
       ],
+    );
+  }
+
+  OutlineInputBorder _border(Color color) {
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(11),
+      borderSide: BorderSide(color: color, width: 1),
     );
   }
 }

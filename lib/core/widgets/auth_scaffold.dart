@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import 'app_back_button.dart';
@@ -9,6 +8,7 @@ class AuthScaffold extends StatelessWidget {
   final PreferredSizeWidget? appBar;
   final Widget? bottomNavigationBar;
   final bool resizeToAvoidBottomInset;
+  final String? backgroundImage;
 
   const AuthScaffold({
     super.key,
@@ -17,6 +17,7 @@ class AuthScaffold extends StatelessWidget {
     this.appBar,
     this.bottomNavigationBar,
     this.resizeToAvoidBottomInset = true,
+    this.backgroundImage,
   });
 
   @override
@@ -43,55 +44,70 @@ class AuthScaffold extends StatelessWidget {
         onTap: () => FocusScope.of(context).unfocus(),
         child: Stack(
           children: [
-            // Background base gradient
+            if (backgroundImage != null)
+              Positioned.fill(
+                child: Image.asset(backgroundImage!, fit: BoxFit.cover),
+              ),
             Positioned.fill(
               child: Container(
-                decoration: const BoxDecoration(
-                  gradient: AppColors.darkBackgroundGradient,
+                decoration: BoxDecoration(
+                  gradient: backgroundImage == null
+                      ? const RadialGradient(
+                          center: Alignment(0.16, -0.38),
+                          radius: 1.12,
+                          colors: [
+                            Color(0xFF8B563D),
+                            Color(0xFF5E3330),
+                            Color(0xFF21100F),
+                          ],
+                          stops: [0, 0.5, 1],
+                        )
+                      : LinearGradient(
+                          colors: [
+                            Colors.black.withValues(alpha: 0.18),
+                            const Color(0xFF170A08).withValues(alpha: 0.62),
+                            const Color(0xFF1A0A14).withValues(alpha: 0.94),
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
                 ),
               ),
             ),
-
-            // Top-Center Accent Glow (Warm Gold)
             Positioned(
-              top: -50,
-              left: MediaQuery.of(context).size.width * 0.1,
-              right: MediaQuery.of(context).size.width * 0.1,
-              child: Center(
-                child: Container(
-                  width: 320,
-                  height: 320,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.accent.withValues(alpha: 0.14),
-                  ),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 120, sigmaY: 120),
-                    child: Container(color: Colors.transparent),
+              right: -80,
+              top: 130,
+              child: Container(
+                width: 260,
+                height: 260,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      AppColors.primary.withValues(alpha: 0.2),
+                      AppColors.primary.withValues(alpha: 0),
+                    ],
                   ),
                 ),
               ),
             ),
-
-            // Bottom-Right Primary Glow (Rose Pink)
             Positioned(
-              bottom: -100,
-              right: -50,
+              left: -90,
+              bottom: -40,
               child: Container(
                 width: 300,
                 height: 300,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColors.primaryGlow.withValues(alpha: 0.15),
-                ),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 100, sigmaY: 100),
-                  child: Container(color: Colors.transparent),
+                  gradient: RadialGradient(
+                    colors: [
+                      const Color(0xFF67352F).withValues(alpha: 0.42),
+                      const Color(0xFF67352F).withValues(alpha: 0),
+                    ],
+                  ),
                 ),
               ),
             ),
-
-            // Content
             SafeArea(
               child: LayoutBuilder(
                 builder: (context, constraints) {

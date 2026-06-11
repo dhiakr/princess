@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:princess_app/core/constants/app_colors.dart';
-import 'package:princess_app/core/constants/app_spacing.dart';
 import 'package:princess_app/features/onboarding/domain/entities/onboarding_page.dart';
 
 class OnboardingPageView extends StatelessWidget {
@@ -12,48 +10,44 @@ class OnboardingPageView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final size = MediaQuery.sizeOf(context);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Illustration directly floating
-          SizedBox(
-            width: double.infinity,
-            height: 280,
-            child: Image.asset(
-              page.imagePath,
-              fit: BoxFit.contain,
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          children: [
+            const SizedBox(height: 36),
+            Opacity(
+              opacity: 0.22,
+              child: Image.asset(
+                'assets/images/Princess-Mark-White@2x-8 1.png',
+                width: 42,
+                height: 42,
+                fit: BoxFit.contain,
+              ),
             ),
-          ),
-          const SizedBox(height: 48),
-
-          // Title
-          Text(
-            page.title,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.displayMedium?.copyWith(
-              height: 1.2,
-              letterSpacing: -0.5,
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+            SizedBox(height: size.height * 0.09),
+            SizedBox(
+              width: double.infinity,
+              height: size.height * 0.23,
+              child: Image.asset(page.imagePath, fit: BoxFit.contain),
             ),
-          ),
-          AppSpacing.hM,
-
-          // Description
-          Text(
-            page.description,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: AppColors.textSecondary,
-              height: 1.5,
-              fontSize: 15,
+            const SizedBox(height: 42),
+            Text(
+              page.title,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.displayMedium?.copyWith(
+                height: 1.45,
+                letterSpacing: 0,
+                fontSize: 19,
+                fontWeight: FontWeight.w300,
+                color: AppColors.textPrimary,
+              ),
             ),
-          ),
-        ],
+            const Spacer(),
+          ],
+        ),
       ),
     );
   }

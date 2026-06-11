@@ -37,17 +37,17 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: AppColors.primary, width: 2),
+              color: Colors.white.withValues(alpha: 0.78),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.2),
-                  blurRadius: 10,
-                  spreadRadius: 2,
+                  color: Colors.black.withValues(alpha: 0.18),
+                  blurRadius: 18,
+                  offset: const Offset(0, 8),
                 ),
               ],
             ),
             child: const CircleAvatar(
-              radius: 54,
+              radius: 38,
               backgroundColor: AppColors.cardBg,
               backgroundImage: AssetImage('assets/images/avatar_profile.png'),
             ),
@@ -68,9 +68,9 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
                   color: AppColors.primary,
                 ),
                 child: const Icon(
-                  Icons.camera_alt_outlined,
+                  Icons.edit_rounded,
                   color: Colors.white,
-                  size: 18,
+                  size: 15,
                 ),
               ),
             ),

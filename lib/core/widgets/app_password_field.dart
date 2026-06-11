@@ -13,7 +13,7 @@ class AppPasswordField extends StatefulWidget {
     super.key,
     this.controller,
     this.labelText,
-    this.hintText = '••••••••',
+    this.hintText = 'Password',
     this.validator,
     this.textInputAction = TextInputAction.done,
     this.onFieldSubmitted,
@@ -39,8 +39,12 @@ class _AppPasswordFieldState extends State<AppPasswordField> {
       obscureText: _obscureText,
       prefixIcon: const Icon(Icons.lock_outline_rounded),
       suffixIcon: IconButton(
+        iconSize: 16,
+        padding: EdgeInsets.zero,
         icon: Icon(
-          _obscureText ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+          _obscureText
+              ? Icons.visibility_off_outlined
+              : Icons.visibility_outlined,
         ),
         onPressed: () {
           setState(() {

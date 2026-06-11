@@ -12,27 +12,22 @@ class AuthDivider extends StatelessWidget {
     return Row(
       children: [
         const Expanded(
-          child: Divider(
-            color: AppColors.cardBorder,
-            thickness: 1.5,
-          ),
+          child: Divider(color: Color(0x80EAD7D2), thickness: 0.7),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.m),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s),
           child: Text(
             text,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.textMuted,
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: 0.5,
-                ),
+              color: AppColors.textSecondary,
+              fontSize: 11,
+              fontWeight: FontWeight.w300,
+              letterSpacing: 0,
+            ),
           ),
         ),
         const Expanded(
-          child: Divider(
-            color: AppColors.cardBorder,
-            thickness: 1.5,
-          ),
+          child: Divider(color: Color(0x80EAD7D2), thickness: 0.7),
         ),
       ],
     );

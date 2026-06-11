@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:princess_app/core/constants/app_colors.dart';
 import 'package:princess_app/core/constants/app_routes.dart';
-import 'package:princess_app/core/constants/app_spacing.dart';
 import 'package:princess_app/core/widgets/app_button.dart';
 import 'package:princess_app/core/widgets/app_password_field.dart';
 import 'package:princess_app/core/widgets/app_text_field.dart';
@@ -36,13 +35,11 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
 
   void _handleSignUp() async {
     if (_formKey.currentState?.validate() ?? false) {
-      final success = await ref.read(authControllerProvider.notifier).signUp(
-            _emailController.text.trim(),
-            _passwordController.text,
-          );
+      final success = await ref
+          .read(authControllerProvider.notifier)
+          .signUp(_emailController.text.trim(), _passwordController.text);
 
       if (success && mounted) {
-        // Progression flow: next is profile completion
         context.go(AppRoutes.fillProfile);
       }
     }
@@ -52,9 +49,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
 
-    // Show error banner if present
     ref.listen<AuthFormState>(authControllerProvider, (previous, next) {
-      if (next.errorMessage != null && next.errorMessage != previous?.errorMessage) {
+      if (next.errorMessage != null &&
+          next.errorMessage != previous?.errorMessage) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(next.errorMessage!),
@@ -70,25 +67,19 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       isLoading: authState.isLoading,
       child: AuthScaffold(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                const SizedBox(height: 54),
+                const AuthHeader(title: 'Create you\nAccount'),
                 const SizedBox(height: 24),
-                const AuthHeader(
-                  title: "Create your Account",
-                  subtitle: "Sign up today to explore high-fidelity features.",
-                ),
-                const SizedBox(height: 36),
-                
-                // Email field
                 AppTextField(
                   controller: _emailController,
-                  labelText: 'Email Address',
-                  hintText: 'hello@example.com',
-                  prefixIcon: const Icon(Icons.email_outlined),
+                  hintText: 'Email Address',
+                  prefixIcon: const Icon(Icons.mail_outline_rounded),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -100,12 +91,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     return null;
                   },
                 ),
-                AppSpacing.hM,
-                
-                // Password field
+                const SizedBox(height: 12),
                 AppPasswordField(
                   controller: _passwordController,
-                  labelText: 'Password',
+                  hintText: 'Password',
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Password is required';
@@ -117,100 +106,139 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   },
                   onFieldSubmitted: (_) => _handleSignUp(),
                 ),
-                
-                const SizedBox(height: 12),
-
-                // Remember Me Row
+                const SizedBox(height: 8),
                 Row(
                   children: [
                     SizedBox(
-                      width: 24,
-                      height: 24,
+                      width: 16,
+                      height: 16,
                       child: Checkbox(
                         value: _rememberMe,
-                        activeColor: AppColors.primary,
-                        checkColor: Colors.white,
-                        side: const BorderSide(color: AppColors.primary, width: 2),
+                        activeColor: const Color(0xFFD9789A),
+                        side: BorderSide(
+                          color: Colors.white.withValues(alpha: 0.52),
+                          width: 0.8,
+                        ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6),
+                          borderRadius: BorderRadius.circular(3),
                         ),
                         onChanged: (val) {
-                          setState(() {
-                            _rememberMe = val ?? false;
-                          });
+                          setState(() => _rememberMe = val ?? false);
                         },
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 7),
                     Text(
                       'Remember me',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.textPrimary,
-                            fontWeight: FontWeight.w500,
-                          ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                
-                // Submit Button
-                AppButton(
-                  text: 'Sign Up',
-                  onPressed: _handleSignUp,
-                ),
-                
-                const SizedBox(height: 32),
-                const AuthDivider(),
-                const SizedBox(height: 24),
-                
-                // Social Options
-                SocialButton(
-                  label: 'Sign Up with Google',
-                  svgPathOrContent: SocialButton.googleSvg,
-                  onPressed: () {
-                    context.go('${AppRoutes.success}?title=Signed In!&subtitle=Welcome back to Princess');
-                  },
-                ),
-                AppSpacing.hM,
-                
-                SocialButton(
-                  label: 'Sign Up with Apple',
-                  svgPathOrContent: SocialButton.appleSvg,
-                  onPressed: () {
-                    context.go('${AppRoutes.success}?title=Signed In!&subtitle=Welcome back to Princess');
-                  },
-                ),
-                
-                const SizedBox(height: 24),
-                
-                // Sign In link
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Already have an account? ",
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                    ),
-                    InkWell(
-                      onTap: () => context.pushReplacement(AppRoutes.signIn),
-                      child: Text(
-                        'Sign In',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.textSecondary,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w300,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 22),
+                AppButton(text: 'Sign up', onPressed: _handleSignUp),
+                const SizedBox(height: 76),
+                const AuthDivider(),
+                const SizedBox(height: 18),
+                _SocialIconRow(
+                  onGoogle: () => context.go(
+                    '${AppRoutes.success}?title=Signed In!&subtitle=Welcome back to Princess',
+                  ),
+                  onApple: () => context.go(
+                    '${AppRoutes.success}?title=Signed In!&subtitle=Welcome back to Princess',
+                  ),
+                ),
+                const SizedBox(height: 20),
+                _AuthSwitchText(
+                  leading: 'Already have an account? ',
+                  action: 'Sign in',
+                  onTap: () => context.pushReplacement(AppRoutes.signIn),
+                ),
+                const SizedBox(height: 28),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class _SocialIconRow extends StatelessWidget {
+  final VoidCallback onGoogle;
+  final VoidCallback onApple;
+
+  const _SocialIconRow({required this.onGoogle, required this.onApple});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SocialButton(
+          label: 'Facebook',
+          svgPathOrContent: SocialButton.facebookSvg,
+          compact: true,
+          onPressed: () {},
+        ),
+        const SizedBox(width: 14),
+        SocialButton(
+          label: 'Google',
+          svgPathOrContent: SocialButton.googleSvg,
+          compact: true,
+          onPressed: onGoogle,
+        ),
+        const SizedBox(width: 14),
+        SocialButton(
+          label: 'Apple',
+          svgPathOrContent: SocialButton.appleSvg,
+          compact: true,
+          onPressed: onApple,
+        ),
+      ],
+    );
+  }
+}
+
+class _AuthSwitchText extends StatelessWidget {
+  final String leading;
+  final String action;
+  final VoidCallback onTap;
+
+  const _AuthSwitchText({
+    required this.leading,
+    required this.action,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          leading,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: AppColors.textPrimary,
+            fontSize: 8,
+            fontWeight: FontWeight.w300,
+          ),
+        ),
+        InkWell(
+          onTap: onTap,
+          child: Text(
+            action,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: const Color(0xFFF0A1BA),
+              fontSize: 8,
+              fontWeight: FontWeight.w300,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

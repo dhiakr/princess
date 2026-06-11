@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
-import '../constants/app_spacing.dart';
 
 class AppTheme {
   AppTheme._();
@@ -19,40 +18,41 @@ class AppTheme {
         error: AppColors.error,
         onSurface: AppColors.textPrimary,
       ),
-      textTheme: GoogleFonts.outfitTextTheme(ThemeData.dark().textTheme).copyWith(
-        displayLarge: GoogleFonts.outfit(
-          color: AppColors.textPrimary,
-          fontSize: 32,
-          fontWeight: FontWeight.bold,
-        ),
-        displayMedium: GoogleFonts.outfit(
-          color: AppColors.textPrimary,
-          fontSize: 26,
-          fontWeight: FontWeight.bold,
-        ),
-        titleLarge: GoogleFonts.outfit(
-          color: AppColors.textPrimary,
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-        ),
-        titleMedium: GoogleFonts.outfit(
-          color: AppColors.textPrimary,
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-        ),
-        bodyLarge: GoogleFonts.inter(
-          color: AppColors.textPrimary,
-          fontSize: 16,
-        ),
-        bodyMedium: GoogleFonts.inter(
-          color: AppColors.textSecondary,
-          fontSize: 14,
-        ),
-        bodySmall: GoogleFonts.inter(
-          color: AppColors.textMuted,
-          fontSize: 12,
-        ),
-      ),
+      textTheme: GoogleFonts.outfitTextTheme(ThemeData.dark().textTheme)
+          .copyWith(
+            displayLarge: GoogleFonts.outfit(
+              color: AppColors.textPrimary,
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+            ),
+            displayMedium: GoogleFonts.outfit(
+              color: AppColors.textPrimary,
+              fontSize: 26,
+              fontWeight: FontWeight.bold,
+            ),
+            titleLarge: GoogleFonts.outfit(
+              color: AppColors.textPrimary,
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+            ),
+            titleMedium: GoogleFonts.outfit(
+              color: AppColors.textPrimary,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+            bodyLarge: GoogleFonts.inter(
+              color: AppColors.textPrimary,
+              fontSize: 16,
+            ),
+            bodyMedium: GoogleFonts.inter(
+              color: AppColors.textSecondary,
+              fontSize: 14,
+            ),
+            bodySmall: GoogleFonts.inter(
+              color: AppColors.textMuted,
+              fontSize: 12,
+            ),
+          ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.cardBg,
@@ -89,9 +89,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(28.0),
           ),
-          padding: const EdgeInsets.symmetric(
-            vertical: 16.0,
-          ),
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
           textStyle: GoogleFonts.outfit(
             fontSize: 16,
             fontWeight: FontWeight.w600,

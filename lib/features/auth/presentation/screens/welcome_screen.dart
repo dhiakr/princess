@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:princess_app/core/constants/app_colors.dart';
 import 'package:princess_app/core/constants/app_routes.dart';
-import 'package:princess_app/core/constants/app_spacing.dart';
 import 'package:princess_app/core/widgets/app_button.dart';
 import 'package:princess_app/core/widgets/auth_divider.dart';
 import 'package:princess_app/core/widgets/auth_scaffold.dart';
 import 'package:princess_app/core/widgets/social_button.dart';
-import 'package:princess_app/features/auth/presentation/widgets/auth_header.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -16,74 +14,55 @@ class WelcomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return AuthScaffold(
       showBackButton: false,
+      backgroundImage: 'assets/images/splash_face.png',
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
+        padding: const EdgeInsets.symmetric(horizontal: 34),
         child: Column(
           children: [
-            const Spacer(),
-            
-            // Header Content
-            const AuthHeader(
-              title: "Step Inside Princess",
-              subtitle: "Welcome back. Log in or create an account to start your premium experience.",
+            const Spacer(flex: 8),
+            Text(
+              'Step Inside',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                color: AppColors.textPrimary,
+                fontSize: 20,
+                fontWeight: FontWeight.w300,
+                letterSpacing: 0,
+              ),
             ),
-            
-            const Spacer(),
-            
-            // Social Credentials (Google and Apple first)
+            const SizedBox(height: 2),
+            Image.asset(
+              'assets/images/Princess-Type-White@2x-8 1.png',
+              width: 122,
+              fit: BoxFit.contain,
+            ),
+            const SizedBox(height: 28),
             SocialButton(
               label: 'Continue with Google',
               svgPathOrContent: SocialButton.googleSvg,
               onPressed: () {
-                context.go('${AppRoutes.success}?title=Signed In!&subtitle=Welcome back to Princess');
+                context.go(
+                  '${AppRoutes.success}?title=Signed In!&subtitle=Welcome back to Princess',
+                );
               },
             ),
-            AppSpacing.hM,
-            
+            const SizedBox(height: 12),
             SocialButton(
               label: 'Continue with Apple',
               svgPathOrContent: SocialButton.appleSvg,
               onPressed: () {
-                context.go('${AppRoutes.success}?title=Signed In!&subtitle=Welcome back to Princess');
+                context.go(
+                  '${AppRoutes.success}?title=Signed In!&subtitle=Welcome back to Princess',
+                );
               },
             ),
-            
-            AppSpacing.hL,
+            const SizedBox(height: 20),
             const AuthDivider(text: 'or'),
-            AppSpacing.hL,
-
-            // Password Login Button (Primary Button)
+            const SizedBox(height: 18),
             AppButton(
-              text: 'Sign In with Password',
+              text: 'Sign in with password',
               onPressed: () => context.push(AppRoutes.signIn),
             ),
-            
-            const Spacer(),
-            
-            // Sign Up redirect at bottom
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Don't have an account? ",
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                ),
-                InkWell(
-                  onTap: () => context.push(AppRoutes.signUp),
-                  child: Text(
-                    'Sign Up',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                ),
-              ],
-            ),
-            
-            const SizedBox(height: 32),
+            const Spacer(flex: 2),
           ],
         ),
       ),

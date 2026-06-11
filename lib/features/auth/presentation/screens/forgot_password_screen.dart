@@ -1,9 +1,9 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:princess_app/core/constants/app_colors.dart';
 import 'package:princess_app/core/constants/app_routes.dart';
-import 'package:princess_app/core/constants/app_spacing.dart';
 import 'package:princess_app/core/widgets/app_button.dart';
 import 'package:princess_app/core/widgets/auth_scaffold.dart';
 import 'package:princess_app/core/widgets/loading_overlay.dart';
@@ -14,115 +14,40 @@ class ForgotPasswordScreen extends ConsumerStatefulWidget {
   const ForgotPasswordScreen({super.key});
 
   @override
-  ConsumerState<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+  ConsumerState<ForgotPasswordScreen> createState() =>
+      _ForgotPasswordScreenState();
 }
 
 class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
-  String _selectedChannel = 'email'; // 'email' or 'sms'
+  String _selectedChannel = 'sms';
 
   void _handleContinue() async {
-    final contactDetail = _selectedChannel == 'email' 
-        ? 'ex***@domain.com' 
-        : '+1 111******99';
-    
-    // Call repository to generate reset event session
+    final contactDetail = _selectedChannel == 'email'
+        ? 'roy***metoui@domain.com'
+        : '+1 111 ******99';
+
     final success = await ref
         .read(authControllerProvider.notifier)
-        .requestPasswordReset(_selectedChannel == 'email' ? 'ex***@domain.com' : 'sms_user@domain.com');
+        .requestPasswordReset(
+          _selectedChannel == 'email'
+              ? 'example@domain.com'
+              : 'sms_user@domain.com',
+        );
 
     if (success && mounted) {
-      context.push('${AppRoutes.otp}?email=${Uri.encodeComponent(contactDetail)}');
+      context.push(
+        '${AppRoutes.otp}?email=${Uri.encodeComponent(contactDetail)}',
+      );
     }
-  }
-
-  Widget _buildChannelCard({
-    required String channelId,
-    required String title,
-    required String detail,
-    required IconData icon,
-    required bool isSelected,
-  }) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedChannel = channelId;
-        });
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: AppColors.cardBg,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.cardBorder,
-            width: isSelected ? 2.0 : 1.0,
-          ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ]
-              : null,
-        ),
-        child: Row(
-          children: [
-            // Icon Circle
-            Container(
-              width: 54,
-              height: 54,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isSelected 
-                    ? AppColors.primary.withValues(alpha: 0.15)
-                    : AppColors.cardBorder.withValues(alpha: 0.5),
-              ),
-              child: Icon(
-                icon,
-                color: isSelected ? AppColors.primary : AppColors.textSecondary,
-                size: 24,
-              ),
-            ),
-            const SizedBox(width: 16),
-            // Text Details
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textSecondary,
-                          fontWeight: FontWeight.w500,
-                        ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    detail,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
 
-    // Listen for error feedback
     ref.listen<AuthFormState>(authControllerProvider, (previous, next) {
-      if (next.errorMessage != null && next.errorMessage != previous?.errorMessage) {
+      if (next.errorMessage != null &&
+          next.errorMessage != previous?.errorMessage) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(next.errorMessage!),
@@ -138,46 +63,130 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       isLoading: authState.isLoading,
       child: AuthScaffold(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              const SizedBox(height: 54),
+              const AuthHeader(title: 'Forget Password'),
+              const SizedBox(height: 76),
+              Text(
+                'Select which contact details should we use to\nreset your password',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                  fontSize: 8,
+                  height: 1.35,
+                  fontWeight: FontWeight.w300,
+                ),
+              ),
               const SizedBox(height: 24),
-              const AuthHeader(
-                title: "Forgot Password",
-                subtitle: "Select which contact details we should use to reset your password.",
-              ),
-              const SizedBox(height: 36),
-              
-              // Option 1: via SMS
-              _buildChannelCard(
-                channelId: 'sms',
-                title: 'via SMS:',
-                detail: '+1 111******99',
-                icon: Icons.chat_bubble_outline_rounded,
+              _ContactCard(
+                title: 'Via SMS:',
+                detail: '+1 111 ******99',
+                icon: Icons.chat_bubble_rounded,
                 isSelected: _selectedChannel == 'sms',
+                onTap: () => setState(() => _selectedChannel = 'sms'),
               ),
-              
-              AppSpacing.hM,
-              
-              // Option 2: via Email
-              _buildChannelCard(
-                channelId: 'email',
-                title: 'via Email:',
-                detail: 'ex***@domain.com',
-                icon: Icons.mail_outline_rounded,
+              const SizedBox(height: 16),
+              _ContactCard(
+                title: 'Via Email:',
+                detail: 'roy***metoui@domain.com',
+                icon: Icons.mail_rounded,
                 isSelected: _selectedChannel == 'email',
+                onTap: () => setState(() => _selectedChannel = 'email'),
               ),
-              
-              const SizedBox(height: 48),
-              
-              // Submit Button
-              AppButton(
-                text: 'Continue',
-                onPressed: _handleContinue,
-              ),
-              const SizedBox(height: 32),
+              const Spacer(),
+              AppButton(text: 'Continue', onPressed: _handleContinue),
+              const SizedBox(height: 38),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ContactCard extends StatelessWidget {
+  final String title;
+  final String detail;
+  final IconData icon;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _ContactCard({
+    required this.title,
+    required this.detail,
+    required this.icon,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 220),
+            height: 64,
+            padding: const EdgeInsets.symmetric(horizontal: 18),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.white.withValues(alpha: isSelected ? 0.19 : 0.11),
+                  Colors.white.withValues(alpha: isSelected ? 0.08 : 0.05),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: isSelected
+                    ? Colors.white.withValues(alpha: 0.78)
+                    : Colors.white.withValues(alpha: 0.12),
+                width: isSelected ? 1.2 : 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: const Color(0xFFC96A8A).withValues(alpha: 0.82),
+                  ),
+                  child: Icon(icon, color: Colors.white, size: 16),
+                ),
+                const SizedBox(width: 18),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.textSecondary,
+                        fontSize: 8,
+                        fontWeight: FontWeight.w300,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      detail,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.textPrimary,
+                        fontSize: 8,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:princess_app/core/constants/app_colors.dart';
 import 'package:princess_app/core/constants/app_routes.dart';
-import 'package:princess_app/core/constants/app_spacing.dart';
 import 'package:princess_app/core/widgets/app_button.dart';
 import 'package:princess_app/core/widgets/app_password_field.dart';
 import 'package:princess_app/core/widgets/auth_scaffold.dart';
@@ -15,7 +14,8 @@ class CreatePasswordScreen extends ConsumerStatefulWidget {
   const CreatePasswordScreen({super.key});
 
   @override
-  ConsumerState<CreatePasswordScreen> createState() => _CreatePasswordScreenState();
+  ConsumerState<CreatePasswordScreen> createState() =>
+      _CreatePasswordScreenState();
 }
 
 class _CreatePasswordScreenState extends ConsumerState<CreatePasswordScreen> {
@@ -38,9 +38,15 @@ class _CreatePasswordScreenState extends ConsumerState<CreatePasswordScreen> {
 
       if (success && mounted) {
         context.go(
-          '${AppRoutes.success}'
-          '?title=Password Reset!&subtitle=Your password was changed successfully'
-          '&nextRoute=${AppRoutes.signIn}',
+          Uri(
+            path: AppRoutes.success,
+            queryParameters: const {
+              'title': 'Successful !',
+              'subtitle':
+                  'Your account is ready to use. You will be redirected to the Home page in a few seconds.',
+              'nextRoute': AppRoutes.signIn,
+            },
+          ).toString(),
         );
       }
     }
@@ -50,9 +56,9 @@ class _CreatePasswordScreenState extends ConsumerState<CreatePasswordScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
 
-    // Listen to error states
     ref.listen<AuthFormState>(authControllerProvider, (previous, next) {
-      if (next.errorMessage != null && next.errorMessage != previous?.errorMessage) {
+      if (next.errorMessage != null &&
+          next.errorMessage != previous?.errorMessage) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(next.errorMessage!),
@@ -68,23 +74,27 @@ class _CreatePasswordScreenState extends ConsumerState<CreatePasswordScreen> {
       isLoading: authState.isLoading,
       child: AuthScaffold(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.l),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 24),
-                const AuthHeader(
-                  title: "Create Password",
-                  subtitle: "Enter a strong, secure new password for your account.",
+                const SizedBox(height: 54),
+                const AuthHeader(title: 'Create New\nPassword'),
+                const SizedBox(height: 76),
+                Text(
+                  'Create Your New Password',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                    fontSize: 8,
+                    fontWeight: FontWeight.w300,
+                  ),
                 ),
-                const SizedBox(height: 36),
-                
-                // New Password
+                const SizedBox(height: 34),
                 AppPasswordField(
                   controller: _passwordController,
-                  labelText: 'New Password',
+                  hintText: 'New password',
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Password is required';
@@ -95,12 +105,10 @@ class _CreatePasswordScreenState extends ConsumerState<CreatePasswordScreen> {
                     return null;
                   },
                 ),
-                AppSpacing.hM,
-                
-                // Confirm Password
+                const SizedBox(height: 12),
                 AppPasswordField(
                   controller: _confirmPasswordController,
-                  labelText: 'Confirm Password',
+                  hintText: 'Confirm new password',
                   textInputAction: TextInputAction.done,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -113,15 +121,9 @@ class _CreatePasswordScreenState extends ConsumerState<CreatePasswordScreen> {
                   },
                   onFieldSubmitted: (_) => _handleCreatePassword(),
                 ),
-                
-                const SizedBox(height: 48),
-                
-                // Submit Button
-                AppButton(
-                  text: 'Reset Password',
-                  onPressed: _handleCreatePassword,
-                ),
-                const SizedBox(height: 32),
+                const Spacer(),
+                AppButton(text: 'Continue', onPressed: _handleCreatePassword),
+                const SizedBox(height: 38),
               ],
             ),
           ),
